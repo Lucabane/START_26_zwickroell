@@ -7,11 +7,11 @@
 
 ## 🏗️ Technical Architecture: "Deterministic MCP Orchestrator"
 
-Unlike traditional "Agentic" approaches (often slow, costly, and unpredictable), we implemented a **Deterministic Orchestration Architecture** based on the **Model Context Protocol (MCP)** standards:
+Unlike traditional "Agentic" approaches, we implemented a deterministic orchestration layer **aligned with Model Context Protocol (MCP) standards**:
 
-1. **Intent Routing & Local Fallback**: High-performance request classification (JSON Mode) coupled with local heuristic logic. If the LLM fails, the system remains fully functional.
-2. **MCP-Powered Tooling & Semantic Mapper (The Glue)**: Leveraging the **Model Context Protocol (MCP)**, we standardized the interface between the LLM and our data sources. Before querying MongoDB, a pre-processor normalizes entities (Machines, Materials) and handles **Automatic Unit Normalization** (e.g., kN ↔ N) to ensure physically accurate comparisons.
-3. **Explainable AI (XAI)**: Every response includes a `Tool Trace` (visible Chain of Thought) showing precisely which data was extracted via the MCP protocol and which specific tool was executed.
+1. **Intent Routing & Local Fallback**: High-performance request classification (JSON Mode) coupled with local heuristic logic. Our system mimics the MCP host-client separation, ensuring functionality even if the LLM fails.
+2. **Standardized Tooling & Semantic Mapper**: We designed our data interface to be MCP-compliant in logic. Before querying MongoDB, a semantic pre-processor normalizes entities (Machines, Materials) and handles Automatic Unit Normalization, acting as the MCP Server layer between the LLM and the raw data.
+3. **Explainable AI (XAI)**: Every response includes a Tool Trace showing precisely which data was extracted and which specific tool was executed, following the MCP transparency philosophy.
 
 ---
 
