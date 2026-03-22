@@ -1,0 +1,17 @@
+# Dependances
+node_modules/
+.venv/
+__pycache__/
+.next/
+dist/
+build/
+
+# Environnement & Secrets
+.env
+.env.local
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

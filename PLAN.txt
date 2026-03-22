@@ -1,0 +1,495 @@
+PHASE 1 — FAIRE UNE PREMIÈRE PAGE CHAT QUI AFFICHE LE MOCK
+
+[1] Vérifier les types du chat
+Fichier à modifier :
+- apps/web/types/chat.ts
+
+À faire :
+- Copier tes types actuels dans ce fichier
+- Ajouter xKey et yKey dans AssistantChart pour simplifier le rendu des graphes
+
+Objectif :
+- Avoir un contrat frontend stable pour toute l’UI
+
+--------------------------------------------------
+
+[2] Mettre à jour le mock pour qu’il soit compatible avec le renderer de chart
+Fichier à modifier :
+- apps/web/lib/mocks/chat-response.ts
+
+À faire :
+- Garder ton mock actuel
+- Ajouter xKey et yKey à chaque chart
+  - bar: xKey="machine", yKey="count"
+  - line: xKey="date", yKey="count"
+
+Objectif :
+- Permettre au composant de graphique de fonctionner sans heuristique fragile
+
+--------------------------------------------------
+
+[3] Définir le type de message du chat
+Fichier à créer :
+- apps/web/types/message.ts
+  ou
+- apps/web/types/chat-ui.ts
+
+À faire :
+- Créer un type ChatMessage pour distinguer :
+  - message user
+  - message assistant
+
+Exemple logique :
+- user => content string
+- assistant => content AssistantResponse
+
+Objectif :
+- Préparer un state propre pour la conversation
+
+--------------------------------------------------
+
+[4] Créer la page principale du chat
+Fichier à modifier :
+- apps/web/app/chat/page.tsx
+
+À faire :
+- Créer un state local messages
+- Ajouter un state input
+- Afficher une page en 3 zones :
+  - header
+  - liste de messages
+  - champ de saisie
+
+Objectif :
+- Obtenir une page chat vide mais structurée
+
+--------------------------------------------------
+
+[5] Créer un faux envoi de message
+Fichier à créer :
+- apps/web/lib/api/chat.ts
+
+À faire :
+- Créer une fonction sendChatMessage(message: string)
+- Pour l’instant, elle retourne mockAssistantResponse
+
+Objectif :
+- Isoler tout de suite le point d’entrée futur de l’API réelle
+
+--------------------------------------------------
+
+[6] Brancher le submit du chat
+Fichier à modifier :
+- apps/web/app/chat/page.tsx
+
+À faire :
+- Au submit :
+  - ajouter le message user dans le state
+  - appeler sendChatMessage()
+  - ajouter la réponse assistant dans le state
+
+Objectif :
+- Pouvoir taper une question et voir apparaître la réponse mockée
+
+--------------------------------------------------
+
+PHASE 2 — AFFICHER LES MESSAGES PROPREMENT
+
+[7] Créer le conteneur global du chat
+Fichier à créer :
+- apps/web/components/chat/ChatShell.tsx
+
+À faire :
+- Faire le layout global :
+  - hauteur écran
+  - colonne
+  - header fixe simple
+  - zone scrollable pour les messages
+  - input en bas
+
+Objectif :
+- Avoir une structure de chat propre et réutilisable
+
+--------------------------------------------------
+
+[8] Créer la liste des messages
+Fichier à créer :
+- apps/web/components/chat/MessageList.tsx
+
+À faire :
+- Boucler sur les messages
+- Afficher UserMessage ou AssistantMessage selon role
+
+Objectif :
+- Centraliser le rendu de la conversation
+
+--------------------------------------------------
+
+[9] Créer le message utilisateur
+Fichier à créer :
+- apps/web/components/chat/UserMessage.tsx
+
+À faire :
+- Afficher une bulle simple alignée à droite
+- Montrer uniquement le texte envoyé
+
+Objectif :
+- Séparer clairement user et assistant
+
+--------------------------------------------------
+
+[10] Créer le message assistant
+Fichier à créer :
+- apps/web/components/chat/AssistantMessage.tsx
+
+À faire :
+- Recevoir un AssistantResponse
+- Afficher les différentes sections dans cet ordre :
+  1. answer
+  2. stats
+  3. charts
+  4. dataUsed
+  5. toolTrace
+  6. limitations
+  7. nextSteps
+
+Objectif :
+- Transformer une réponse assistant en “rapport analytique enrichi”
+
+--------------------------------------------------
+
+[11] Créer le champ de saisie
+Fichier à créer :
+- apps/web/components/chat/ChatInput.tsx
+
+À faire :
+- Input texte
+- Bouton envoyer
+- Gérer enter pour submit
+
+Objectif :
+- Avoir une expérience de chat utilisable en démo
+
+--------------------------------------------------
+
+PHASE 3 — RENDRE CHAQUE BLOC DE LA RÉPONSE
+
+[12] Créer le bloc de texte principal
+Fichier à créer :
+- apps/web/components/response/ResponseText.tsx
+
+À faire :
+- Afficher response.answer dans une carte propre
+
+Objectif :
+- Toujours avoir une réponse lisible même si le reste est absent
+
+--------------------------------------------------
+
+[13] Créer la grille de stats
+Fichier à créer :
+- apps/web/components/response/StatsGrid.tsx
+
+À faire :
+- Afficher les stats sous forme de petites cartes
+- Chaque carte montre :
+  - label
+  - value
+  - description éventuelle
+
+Objectif :
+- Donner les infos clés immédiatement
+
+--------------------------------------------------
+
+[14] Créer la section graphique
+Fichier à créer :
+- apps/web/components/response/ChartCard.tsx
+- apps/web/components/response/ChartRenderer.tsx
+
+À faire :
+- ChartCard = enveloppe visuelle d’un graphe
+- ChartRenderer = choisit le bon composant selon chart.type
+
+Objectif :
+- Supporter line, bar, scatter immédiatement
+- box pourra être un placeholder au début
+
+--------------------------------------------------
+
+[15] Installer et brancher la librairie de graphes
+Fichier concerné :
+- package.json
+- apps/web/components/response/ChartRenderer.tsx
+
+À faire :
+- Installer recharts
+- Gérer :
+  - line
+  - bar
+  - scatter
+- Afficher aussi title, axes, tooltip, interpretation
+
+Objectif :
+- Répondre au besoin de visualisation demandé par le case, avec une sortie visuelle + verbale :contentReference[oaicite:3]{index=3}
+
+--------------------------------------------------
+
+[16] Créer la carte "data used"
+Fichier à créer :
+- apps/web/components/response/DataUsedCard.tsx
+
+À faire :
+- Afficher :
+  - testsCount
+  - filters
+  - parameters
+  - resultTypes
+  - timeRange
+
+Objectif :
+- Montrer quelles données ont été prises en compte
+- Rendre la réponse crédible et explicable
+
+--------------------------------------------------
+
+[17] Créer la carte "tool trace"
+Fichier à créer :
+- apps/web/components/response/ToolTraceCard.tsx
+
+À faire :
+- Afficher chaque étape dans l’ordre
+- Montrer :
+  - numéro
+  - tool
+  - purpose
+  - inputSummary
+  - outputSummary
+
+Objectif :
+- Répondre au besoin de transparence et d’auditabilité du système :contentReference[oaicite:4]{index=4}
+
+--------------------------------------------------
+
+[18] Créer la carte "limitations"
+Fichier à créer :
+- apps/web/components/response/LimitationsCard.tsx
+
+À faire :
+- Afficher les limitations dans une carte discrète
+
+Objectif :
+- Donner un comportement d’assistant crédible et honnête
+
+--------------------------------------------------
+
+[19] Créer la carte "next steps"
+Fichier à créer :
+- apps/web/components/response/NextStepsCard.tsx
+
+À faire :
+- Afficher les suggestions de suite
+- Idéalement sous forme de boutons cliquables
+
+Objectif :
+- Encourager le flow conversationnel et les follow-up questions, ce qui est explicitement attendu dans la vision du challenge :contentReference[oaicite:5]{index=5}:contentReference[oaicite:6]{index=6}
+
+--------------------------------------------------
+
+PHASE 4 — AMÉLIORER L’EXPÉRIENCE DE CHAT
+
+[20] Rendre les nextSteps interactifs
+Fichier à modifier :
+- apps/web/components/response/NextStepsCard.tsx
+- apps/web/app/chat/page.tsx
+
+À faire :
+- Au clic sur un next step :
+  - remplir l’input
+  ou
+  - envoyer directement la nouvelle requête
+
+Objectif :
+- Démontrer un assistant conversationnel fluide
+
+--------------------------------------------------
+
+[21] Ajouter un état de chargement
+Fichier à modifier :
+- apps/web/app/chat/page.tsx
+- éventuellement apps/web/components/chat/AssistantMessage.tsx
+
+À faire :
+- Ajouter isLoading
+- Afficher “L’assistant analyse les données...”
+
+Objectif :
+- Rendre l’UX réaliste
+
+--------------------------------------------------
+
+[22] Ajouter un scroll automatique
+Fichier à modifier :
+- apps/web/components/chat/MessageList.tsx
+
+À faire :
+- Scroll vers le bas quand un nouveau message arrive
+
+Objectif :
+- Comportement de chat propre
+
+--------------------------------------------------
+
+[23] Ajouter des messages d’erreur
+Fichier à modifier :
+- apps/web/lib/api/chat.ts
+- apps/web/app/chat/page.tsx
+
+À faire :
+- Gérer le cas où l’appel échoue
+- Afficher une carte d’erreur assistant
+
+Objectif :
+- Éviter qu’une démo casse silencieusement
+
+--------------------------------------------------
+
+PHASE 5 — RENDRE LE FRONTEND PRÊT POUR L’API RÉELLE
+
+[24] Garder une couche d’accès API unique
+Fichier à modifier :
+- apps/web/lib/api/chat.ts
+
+À faire :
+- Conserver une seule fonction frontend pour parler au backend
+- Aujourd’hui : retourne le mock
+- Plus tard : fetch vers apps/api
+
+Objectif :
+- Remplacer le mock sans toucher toute l’UI
+
+--------------------------------------------------
+
+[25] Préparer le payload de requête
+Fichier à créer :
+- apps/web/types/api.ts
+  ou
+- packages/shared/... si vous mutualisez plus tard
+
+À faire :
+- Définir un type simple pour la requête :
+  - message
+  - conversationId éventuel
+  - history éventuel plus tard
+
+Objectif :
+- Faciliter l’intégration backend ensuite
+
+--------------------------------------------------
+
+[26] Préparer l’interface pour réponses partielles
+Fichier à modifier plus tard :
+- apps/web/types/chat.ts
+- apps/web/components/chat/AssistantMessage.tsx
+
+À faire :
+- Prévoir que certaines réponses n’auront pas toujours charts, stats ou toolTrace
+
+Objectif :
+- Rester robuste face aux futures sorties du backend
+
+--------------------------------------------------
+
+PHASE 6 — FINITION DÉMO HACKATHON
+
+[27] Ajouter un header produit
+Fichier à modifier :
+- apps/web/components/chat/ChatShell.tsx
+
+À faire :
+- Ajouter un titre du style :
+  - Chat with Your Test Data
+- Ajouter un sous-titre court :
+  - Ask questions about your lab tests in natural language
+
+Objectif :
+- Poser le contexte immédiatement au jury
+
+--------------------------------------------------
+
+[28] Ajouter quelques prompts d’exemple
+Fichier à modifier :
+- apps/web/app/chat/page.tsx
+  ou
+- apps/web/components/chat/ChatInput.tsx
+
+À faire :
+- Ajouter 3 à 5 requêtes cliquables :
+  - Montre-moi les tests de traction sur l’acier du mois dernier
+  - Compare ces résultats au mois précédent
+  - Affiche la résistance maximale moyenne
+
+Objectif :
+- Guider la démo et montrer le potentiel
+
+--------------------------------------------------
+
+[29] Ajouter une hiérarchie visuelle claire
+Fichier à modifier :
+- tous les composants response/*
+- éventuellement styles globaux
+
+À faire :
+- Bien distinguer :
+  - texte principal
+  - stats
+  - graphiques
+  - trace des tools
+- Garder le tool trace secondaire visuellement, mais accessible
+
+Objectif :
+- Une interface claire, lisible et “jury-friendly”
+
+--------------------------------------------------
+
+[30] Tester le scénario principal de bout en bout
+Fichiers à vérifier :
+- apps/web/app/chat/page.tsx
+- apps/web/lib/mocks/chat-response.ts
+- tous les composants créés
+
+À faire :
+- Tester la question démo :
+  - "Montre-moi les tests de traction sur l’acier du mois dernier"
+
+Objectif :
+- Valider le use case central annoncé dans le projet
+
+--------------------------------------------------
+
+ORDRE CONSEILLÉ POUR ME REDONNER DES SOUS-TÂCHES
+
+Tu peux maintenant me demander dans cet ordre :
+
+1. "donne-moi le contenu de apps/web/types/chat.ts"
+2. "donne-moi le contenu de apps/web/lib/mocks/chat-response.ts mis à jour avec xKey/yKey"
+3. "donne-moi le code de apps/web/app/chat/page.tsx"
+4. "donne-moi le code de ChatShell / MessageList / ChatInput"
+5. "donne-moi le code de AssistantMessage"
+6. "donne-moi le code de StatsGrid"
+7. "donne-moi le code de ChartRenderer avec recharts"
+8. "donne-moi le code de DataUsedCard"
+9. "donne-moi le code de ToolTraceCard"
+10. "donne-moi le code de NextStepsCard"
+
+--------------------------------------------------
+
+RECOMMANDATION IMPORTANTE
+
+Le seul changement de contrat que je te recommande tout de suite est :
+
+AssistantChart
+- ajouter xKey: string
+- ajouter yKey: string
+
+Parce que sans ça, la couche graphique sera inutilement compliquée.
