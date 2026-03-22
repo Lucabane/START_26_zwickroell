@@ -1,99 +1,98 @@
 # 🛠️ ZwickRoell Data Intelligence Orchestrator
-**Projet START Hack 2026** | Team **Inglorious BaSTART**
+**START Hack 2026 Project** | Team **Inglorious BaSTART**
 
-> Une plateforme d'analyse industrielle permettant d'interroger, comparer et monitorer 31 000+ rapports d'essais de matériaux via une interface naturelle, déterministe et transparente.
-
----
-
-## 🏗️ Architecture Technique : "Deterministic MCP Orchestrator"
-
-Contrairement aux approches "Agentiques" classiques (souvent lentes, coûteuses et imprévisibles), nous avons implémenté une **Architecture d'Orchestration Déterministe** basée sur les standards du **Model Context Protocol (MCP)** :
-
-1. **Intent Routing & Local Fallback** : Classification haute performance des requêtes (JSON Mode) doublée d'une logique heuristique locale. Si le LLM échoue, le système reste fonctionnel.
-2. **MCP-Powered Tooling & Semantic Mapper (The Glue)** : En exploitant le **Model Context Protocol (MCP)**, nous avons standardisé l'interface entre le LLM et nos sources de données. Avant d'interroger MongoDB, un pré-processeur normalise les entités (Machines, Matériaux) et gère la **Normalisation automatique des unités** (ex: kN ↔ N) pour garantir la pertinence des comparaisons.
-3. **Explainable AI (XAI)** : Chaque réponse est accompagnée d'un `Tool Trace` (Chain of Thought visible) montrant précisément quelles données ont été extraites via le protocole MCP et quel outil a été exécuté.
+> An industrial analysis platform designed to query, compare, and monitor 31,000+ material test reports through a natural, deterministic, and transparent interface.
 
 ---
 
-## 📂 Arborescence du Projet
+## 🏗️ Technical Architecture: "Deterministic MCP Orchestrator"
+
+Unlike traditional "Agentic" approaches (often slow, costly, and unpredictable), we implemented a **Deterministic Orchestration Architecture** based on the **Model Context Protocol (MCP)** standards:
+
+1. **Intent Routing & Local Fallback**: High-performance request classification (JSON Mode) coupled with local heuristic logic. If the LLM fails, the system remains fully functional.
+2. **MCP-Powered Tooling & Semantic Mapper (The Glue)**: Leveraging the **Model Context Protocol (MCP)**, we standardized the interface between the LLM and our data sources. Before querying MongoDB, a pre-processor normalizes entities (Machines, Materials) and handles **Automatic Unit Normalization** (e.g., kN ↔ N) to ensure physically accurate comparisons.
+3. **Explainable AI (XAI)**: Every response includes a `Tool Trace` (visible Chain of Thought) showing precisely which data was extracted via the MCP protocol and which specific tool was executed.
+
+---
+
+## 📂 Project Structure
 
 ```text
 .
 ├── backend/
-│   ├── api/                # Points d'entrée FastAPI (Chat, Data)
-│   ├── models/             # Schémas Pydantic (Validation stricte)
+│   ├── api/                # FastAPI Endpoints (Chat, Data)
+│   ├── models/             # Pydantic Schemas (Strict Validation)
 │   ├── services/           
-│   │   ├── llm_orchestrator.py # Cerveau (Routing & Fallback)
-│   │   ├── semantic_mapper.py  # Normalisation sémantique & unités
-│   │   └── data_access_layer.py # Interface MongoDB
-│   └── tools/              # Logique métier (Trend, Compare, Inspect, Find)
+│   │   ├── llm_orchestrator.py # Brain (Routing & Fallback)
+│   │   ├── semantic_mapper.py  # Semantic Normalization & Units
+│   │   └── data_access_layer.py # MongoDB Interface
+│   └── tools/              # Business Logic (Trend, Compare, Inspect, Find)
 ├── frontend/
 │   ├── app/                # Next.js 15 App Router
 │   ├── components/         # UI Components (Charts, Stats Cards)
-│   │   └── response/       # Rendu riche (Markdown GFM, ChartRenderer)
+│   │   └── response/       # Rich Rendering (Markdown GFM, ChartRenderer)
 │   ├── globals.css         # Tailwind v4 Config (@plugin typography)
 │   └── lib/                # API Client & Types
 └── README.md
 ```
 
-## 🚀 Le "Golden Path" (Scénario de Démo)
+## 🚀 The "Golden Path" (Demo Scenario)
 
-La démo a été conçue pour montrer la robustesse du système face à des données industrielles réelles :
+The demo was designed to showcase the system's robustness against real-world industrial data:
 
-* **Search** : *"Show me 3 tests for steel"*
-    * **Feature** : Extraction de limite numérique et rendu en tableau Markdown dynamique.
-* **Inspect** : *"Inspect data structure for BAR 52"*
-    * **Feature** : Découverte dynamique de schéma (Zero-shot schema detection).
-* **Compare** : *"Compare Standard force between BAR 52 and metal plate"*
-    * **Feature** : **Moment "Wow"** - Détection de disparité d'unités (kN vs N) et recalcul automatique pour une comparaison physique juste.
-* **Trend** : *"Show me the trend over time"*
-    * **Feature** : Analyse de Volatilité - Calcul de l'écart-type en temps réel. Si un pic (outlier) est détecté, le système alerte sur l'instabilité du process.
+* **Search**: *"Show me 3 tests for steel"*
+    * **Feature**: Numeric limit extraction and dynamic Markdown table rendering.
+* **Inspect**: *"Inspect data structure for BAR 52"*
+    * **Feature**: Zero-shot dynamic schema detection.
+* **Compare**: *"Compare Standard force between BAR 52 and metal plate"*
+    * **Feature**: **"Wow" Moment** - Automatic unit disparity detection (kN vs N) and real-time recalculation for a fair physical comparison.
+* **Trend**: *"Show me the trend over time"*
+    * **Feature**: Volatility Analysis - Real-time standard deviation calculation. If a spike (outlier) is detected, the system alerts the user about production instability.
 
 ---
 
-## 💻 Installation et Lancement
+## 💻 Installation & Setup
 
 ### 1. Backend (FastAPI)
-*Nécessite Python 3.10+*
+*Requires Python 3.10+*
 
 ```bash
 cd backend
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-# Créer un fichier .env avec OPENAI_API_KEY et MONGO_URI
+# Create a .env file with OPENAI_API_KEY and MONGO_URI
 uvicorn main:app --reload --port 8000
 ```
 
 ### 2. Frontend (Next.js)
-*Nécessite Node.js 18+*
+*Requires Node.js 18+*
 
 ```bash
-# Aller dans le dossier web
+# Navigate to the web directory
 cd frontend/web
 
-# Installer les dépendances de base
+# Install base dependencies
 npm install
 
-# Installation des plugins de rendu (Markdown & Typography)
+# Install rendering plugins (Markdown & Typography)
 npm install @tailwindcss/typography react-markdown remark-gfm
 
-# Lancer l'application en mode développement
+# Run the development server
 npm run dev
 ```
 
-L'application est alors accessible sur **[http://localhost:3000](http://localhost:3000)**.
+The application will be accessible at **[http://localhost:3000](http://localhost:3000)**.
 
 ---
 
-## 🛠️ Stack Technologique
+## 🛠️ Tech Stack
 
-* **Frontend** : Next.js 15 (App Router), Tailwind CSS v4, Recharts, React-Markdown.
-* **Backend** : FastAPI, Pydantic v2, OpenAI GPT-4o-mini (Structured Outputs).
-* **Data** : MongoDB (31k records).
-* **Logic** : Orchestration déterministe stateless (Latence < 1.5s).
+* **Frontend**: Next.js 15 (App Router), Tailwind CSS v4, Recharts, React-Markdown.
+* **Backend**: FastAPI, Pydantic v2, OpenAI GPT-4o-mini (Structured Outputs).
+* **Data**: MongoDB (31k records).
+* **Logic**: Stateless deterministic orchestration (Latency < 1.5s).
 
 ---
 
-*Développé par la Team **Inglorious BaSTART** pour le START Hack 2026.*
-
+*Developed by Team **Inglorious BaSTART** for START Hack 2026.*
